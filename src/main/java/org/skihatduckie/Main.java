@@ -8,7 +8,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Main {
     // Window manager
-    Window window;
+    Window window = new Window(480, 480, false, true);;
 
 	public void run() {
 		System.out.println("Hello LWJGL " + Version.getVersion() + "!");
@@ -20,7 +20,6 @@ public class Main {
 	}
 
 	private void init() {
-        Window window = new Window(480, 640, false, true);
         window.setTitle("Javabash");
 
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
