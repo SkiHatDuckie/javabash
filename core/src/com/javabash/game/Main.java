@@ -1,33 +1,59 @@
 package com.javabash.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Main extends ApplicationAdapter {
-	private ShapeRenderer shape;
+	private TextField textbox;
+	private SpriteBatch batch;
 	
 	@Override
-	public void create () {
-	shape = new ShapeRenderer();
+	public void create() {
+		batch = new SpriteBatch();
+
+		TextFieldStyle style = new TextFieldStyle();
+		style.font = generateTtfFont("fonts\\VT323-Regular.ttf", 24);
+		style.fontColor = Color.WHITE;
+
+		textbox = new TextField("Hello World!", style);
+		textbox.setX(100);
+		textbox.setY(100);
 	}
 
 	@Override
-	public void render () {
+	public void render() {
 		// Set window background color
 		ScreenUtils.clear(0, 0, 0, 1);
 
-		Rect box = new Rect(0, 0, 25, 25, Color.RED);
-
-		shape.begin(ShapeType.Filled);
-		shape.setColor(box.color);
-		shape.rect(box.x, box.y, box.width, box.height);
-		shape.end();
+		batch.begin();
+		textbox.draw(batch, 1);
+		batch.end();
 	}
 	
 	@Override
-	public void dispose () {
+	public void dispose() {
+		batch.dispose();
+		
+	}
+
+	// Generate and return a font from a .ttf file
+	private BitmapFont generateTtfFont(String path, int size) {
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(path));
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        parameter.size = size;
+
+        BitmapFont font = generator.generateFont(parameter);
+
+        generator.dispose();
+
+		return font;
 	}
 }
