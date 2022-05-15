@@ -2,50 +2,53 @@ package com.javabash.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+//import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class Main extends ApplicationAdapter {
-	private TextField textbox;
+	private OrthographicCamera camera;
 	private SpriteBatch batch;
+
+	private BitmapFont vt323Font;
 	
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
 
-		TextFieldStyle style = new TextFieldStyle();
-		style.font = generateTtfFont("fonts\\VT323-Regular.ttf", 24);
-		style.fontColor = Color.WHITE;
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, 480, 480);
 
-		textbox = new TextField("Hello World!", style);
-		textbox.setX(100);
-		textbox.setY(100);
+		vt323Font = generateFreetypeFont("fonts\\VT323-Regular.ttf", 24);
 	}
 
 	@Override
 	public void render() {
 		// Set window background color
-		ScreenUtils.clear(0, 0, 0, 1);
+		ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
 
+		// Update camera matrices
+		camera.update();
+		
+		batch.setProjectionMatrix(camera.combined);
+
+		// Any sprite that needs to be rendered should be done so using `batch`
 		batch.begin();
-		textbox.draw(batch, 1);
+		vt323Font.draw(batch, "Hello World!", 10.0f, 10.0f + vt323Font.getCapHeight());
 		batch.end();
 	}
 	
 	@Override
 	public void dispose() {
 		batch.dispose();
-		
 	}
 
 	// Generate and return a font from a .ttf file
-	private BitmapFont generateTtfFont(String path, int size) {
+	private BitmapFont generateFreetypeFont(String path, int size) {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(path));
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
         parameter.size = size;
