@@ -8,7 +8,11 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public class Main extends Game {
+	/**Draws sprites onto the game screen.
+	 * Set to protected so that other classes within the game package 
+	 * can find these resources. */
 	protected SpriteBatch batch;
+	/**Draws text onto the game screen. */
 	protected BitmapFont vt323Font;
 	
 	public void create() {
@@ -27,7 +31,7 @@ public class Main extends Game {
 		vt323Font.dispose();
 	}
 
-	// Generate and return a font from a .ttf file
+	/**Generates and returns a font from a .ttf file. */
 	private BitmapFont generateFreetypeFont(String path, int size) {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(path));
         FreeTypeFontParameter parameter = new FreeTypeFontParameter();
