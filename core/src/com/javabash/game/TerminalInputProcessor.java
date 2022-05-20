@@ -13,7 +13,9 @@ public class TerminalInputProcessor extends InputAdapter {
         if (character == '\n') {
             terminal.setInputIndex(terminal.getLastCharacterIndex() + 1);
             terminal.writeChar(character);
-            terminal.executeCommand();
+            terminal.executeUserInput();
+        } else if (character == '\b') {
+            terminal.backspace();
         } else {
             terminal.writeChar(character);
         }

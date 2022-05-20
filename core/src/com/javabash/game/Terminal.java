@@ -1,5 +1,9 @@
 package com.javabash.game;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class Terminal {
     private char[] virtualOutput;
     /**Index in {@code virtualOutput} to write virtual input to. */
@@ -7,6 +11,7 @@ public class Terminal {
     /**Index in {@code virtualOutput} to read the next command from. */
     private int commandIdx;
     private String commandPromptPrefix;
+    private HashMap<String, Command> commandTable;
 
     /**Creates a new virtual terminal. 
      * @param bufSize : Size of the output buffer */
@@ -14,8 +19,9 @@ public class Terminal {
         virtualOutput = new char[bufSize];
         inputIdx = 0;
         commandIdx = 0;
-
         commandPromptPrefix = "> ";
+        commandTable = new HashMap<String, Command>();
+
         writeCommandPromptPrefix();
     }
 
@@ -31,7 +37,6 @@ public class Terminal {
         while (virtualOutput[idx] != '\u0000') {
             idx++;
         }
-
         return idx - 1;
     }
 
@@ -49,30 +54,101 @@ public class Terminal {
         inputIdx++;
     }
 
+    /**Writes a String {@code str} into {@code virtualOutput} at {@code inputIdx}. */
+    public void writeString(String str) {
+        for (char ch : str.toCharArray()) {
+            writeChar(ch);
+        }
+    }
+
+    /**Adds a new command to {@code commandTable}.
+     * @param name : Name of command (used to execute command in virtual terminal)
+     * @param command : It is the user's responsibility to handle the arguments given to Command.execute() */
+    public void addCommand(String name, Command command) {
+        commandTable.put(name, command);
+    }
+
+    /**Gets the user input in {@code virtualOutput}, parses it into a command,
+     * and then executes the command if it exists. 
+     * <br><br>
+     * An error message will be written into {@code virtualOutput} if the name of
+     * the parsed command does not exist. */
+    public void executeUserInput() {
+        String userInput = getUserInput();
+        inputIdx = getLastCharacterIndex() + 1;
+
+        List<String> command = parse(userInput);
+        if (isValidName(command.get(0))) {
+            commandTable.get(command.get(0))
+                .execute(command.subList(1, command.size()).toArray(String[]::new));
+            writeCommandPromptPrefix();
+        } else {
+            writeNameNotFoundError(command.get(0));
+            writeCommandPromptPrefix();
+        }
+        commandIdx = getLastCharacterIndex() + 1;
+    }
+
+    /**Removes the character at index {@code inputIdx - 1} in {@code virtualOutput}.
+     * All characters after the removed character will be moved one index back.
+     * (index 2 -> 1, 3 -> 2...)
+     * <br><br>
+     * Nothing is changed if {@code inputIdx} == {@code commandIdx}. */
+    public void backspace() {
+        if (!(inputIdx == commandIdx)) {
+            virtualOutput[inputIdx - 1] = '\u0000';
+            for (int i = inputIdx; i <= getLastCharacterIndex() + 1; i++) {
+                virtualOutput[i - 1] = virtualOutput[i];
+            }
+            inputIdx--;
+        }
+    }
+
     /**Grabs all characters in {@code virtualOutput} in range {@code commandIdx}
      * to the index of the last character, both inclusive.
-     * All escape characters (i.e. '\n', '\t') are ignored.
-     * The collected range is then parsed and processed accordingly. */
-    public void executeCommand() {
-        // TODO: Method is not finished
-        String command = "";
+     * All escape characters (i.e. '\n', '\t') are ignored. */
+    private String getUserInput() {
+        String input = "";
         for (int i = commandIdx; i <= getLastCharacterIndex(); i++) {
             if (Character.isLetterOrDigit(virtualOutput[i])
                 || Character.isSpaceChar(virtualOutput[i])) {
-                command += virtualOutput[i];
+                input += virtualOutput[i];
             }
         }
-        commandIdx = getLastCharacterIndex() + 1;
-        inputIdx = getLastCharacterIndex() + 1;
-        writeCommandPromptPrefix();
+        return input;
     }
 
-    /**Writes the command prompt prefix to virtual output. */
-    private void writeCommandPromptPrefix() {
-        for (char ch : commandPromptPrefix.toCharArray()) {
-            virtualOutput[inputIdx] = ch;
-            inputIdx++;
-            commandIdx++;
+    /**Returns the command name and any arguments as a list of strings.
+     * The first value in the list is the command name, followed
+     * by the arguments.
+     * <br><br>
+     * This method does not check for whether the command exists or not. */
+    private List<String> parse(String input) {
+        String[] items = input.split(" ");
+        List<String> args = new ArrayList<String>();
+
+        for (String item : items) {
+            if (!item.equals("")) {
+                args.add(item);
+            }
         }
+        return args;
+    }
+
+    /**Returns true if {@code name} is a key in {@code commandTable}. */
+    private boolean isValidName(String name) {
+        return commandTable.containsKey(name);
+    }
+
+    /**Writes the command prompt prefix to {@code virtualOutput}. */
+    private void writeCommandPromptPrefix() {
+        writeString(commandPromptPrefix);
+    }
+
+    /**Writes an error to {@code virtualOutput} when a command name cannot
+    be found. */
+    private void writeNameNotFoundError(String name) {
+        String errorMsg = "Error: \"" + name + "\" is not a command.\n";
+        writeString(errorMsg);
     }
 }

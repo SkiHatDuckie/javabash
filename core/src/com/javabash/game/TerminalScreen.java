@@ -22,10 +22,19 @@ public class TerminalScreen implements Screen {
         // Set the buffer size to some abitrary large number.
         terminal = new Terminal(10000000);
         virtualOutput = terminal.getOutputBuffer();
-        terminalWidth = 20;
+        terminalWidth = 40;
 
         terminalInputProcessor = new TerminalInputProcessor(terminal);
         Gdx.input.setInputProcessor(terminalInputProcessor);
+
+        terminal.addCommand("echo", new Command() {
+            public void execute(String[] args) {
+                for (String arg : args) {
+                    terminal.writeString(arg + " ");
+                }
+                terminal.writeChar('\n');
+            }
+        });
     }
 
     @Override
@@ -51,7 +60,7 @@ public class TerminalScreen implements Screen {
             if (virtualOutput[i] == '\n' || rowStr.length() == terminalWidth) {
                 rows.add(rowStr);
                 rowStr = "";
-                if (rowStr.length() == terminalWidth) {
+                if (virtualOutput[i] != '\n') {
                     rowStr += virtualOutput[i];
                 }
             } else {
