@@ -14,7 +14,6 @@ public class TerminalScreen implements Screen {
     private char[] virtualOutput;
     /**The maximum number of characters that should be drawn in one row. */
     private int terminalWidth;
-    TerminalInputProcessor terminalInputProcessor;
 
     private final Files files;
 
