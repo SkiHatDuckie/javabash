@@ -14,23 +14,20 @@ public class TerminalScreen implements Screen {
     private char[] virtualOutput;
     /**The maximum number of characters that should be drawn in one row. */
     private int terminalWidth;
-    private TerminalInputProcessor terminalInputProcessor;
+    TerminalInputProcessor terminalInputProcessor;
 
     private final Files files;
 
     public TerminalScreen(final Main game) {
         this.game = game;
         files = new Files(new File[] {
-            new MapFile(game, "map")
+            new MapFile(this.game, "map")
         });
 
         // Set the buffer size to some abitrary large number.
         terminal = new Terminal(10000000);
         virtualOutput = terminal.getOutputBuffer();
         terminalWidth = 40;
-
-        terminalInputProcessor = new TerminalInputProcessor(terminal);
-        Gdx.input.setInputProcessor(terminalInputProcessor);
 
         terminal.addCommand("echo", new Command() {
             public void execute(String[] args) {
@@ -53,20 +50,25 @@ public class TerminalScreen implements Screen {
             public void execute(String[] args) {
                 try {
                     File file = files.getFile(args[0]);
-                    game.setScreen(file);
-                } catch (IndexOutOfBoundsException | NullPointerException ex) {
-                    if (ex instanceof IndexOutOfBoundsException) {
-                        terminal.writeString(
-                            "Error: Command \"open\" is missing argument \"name\".\n"
-                        );
-                    } else {
+                    if (file == null) {
                         terminal.writeString(
                             "Error when using command \"open\": \"" + args[0] + "\" is not a file.\n"
                         );
+                    } else {
+                        game.setScreen(file);
                     }
+                } catch (IndexOutOfBoundsException ex) {
+                    terminal.writeString(
+                        "Error: Command \"open\" is missing argument \"name\".\n"
+                    );
                 }
             }
         });
+    }
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(new TerminalInputProcessor(terminal));
     }
 
     @Override
@@ -115,14 +117,15 @@ public class TerminalScreen implements Screen {
     public void hide() {}
 
     @Override
-    public void show() {}
-
-    @Override
     public void pause() {}
 
     @Override 
     public void resume() {}
 
     @Override
-    public void dispose() {}
+    public void dispose() {
+        for (File file : files.getFiles()) {
+            file.dispose();
+        }
+    }
 }

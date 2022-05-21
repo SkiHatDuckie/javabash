@@ -8,18 +8,21 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public class Main extends Game {
-	/**Draws sprites onto the game screen.
+	/**Draws sprites onto the screen.
 	 * Set to protected so that other classes within the game package 
 	 * can find these resources. */
 	protected SpriteBatch batch;
-	/**Draws text onto the game screen. */
+	/**Draws text onto the screen. */
 	protected BitmapFont vt323Font;
+	/**Initializes the terminal screen, which should persist until the app is closed. */
+	protected TerminalScreen terminalScreen;
 	
 	public void create() {
 		batch = new SpriteBatch();
 		vt323Font = generateFreetypeFont("fonts\\VT323-Regular.ttf", 24);
+		terminalScreen = new TerminalScreen(this);
 
-		this.setScreen(new TerminalScreen(this));
+		this.setScreen(terminalScreen);
 	}
 
 	public void render() {
@@ -29,6 +32,7 @@ public class Main extends Game {
 	public void dispose() {
 		batch.dispose();
 		vt323Font.dispose();
+		terminalScreen.dispose();
 	}
 
 	/**Generates and returns a font from a .ttf file. */
