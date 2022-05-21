@@ -78,14 +78,16 @@ public class Terminal {
         inputIdx = getLastCharacterIndex() + 1;
 
         List<String> command = parse(userInput);
-        if (isValidName(command.get(0))) {
-            commandTable.get(command.get(0))
-                .execute(command.subList(1, command.size()).toArray(String[]::new));
-            writeCommandPromptPrefix();
-        } else {
-            writeNameNotFoundError(command.get(0));
-            writeCommandPromptPrefix();
+        if (command.size() > 0) {
+            if (isValidName(command.get(0))) {
+                commandTable.get(command.get(0))
+                    .execute(command.subList(1, command.size()).toArray(String[]::new));
+            } else {
+                writeNameNotFoundError(command.get(0));
+            }
         }
+        
+        writeCommandPromptPrefix();
         commandIdx = getLastCharacterIndex() + 1;
     }
 

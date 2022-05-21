@@ -16,8 +16,13 @@ public class TerminalScreen implements Screen {
     private int terminalWidth;
     private TerminalInputProcessor terminalInputProcessor;
 
+    private final Files files;
+
     public TerminalScreen(final Main game) {
         this.game = game;
+        files = new Files(new File[] {
+            new MapFile(game, "map")
+        });
 
         // Set the buffer size to some abitrary large number.
         terminal = new Terminal(10000000);
@@ -33,6 +38,33 @@ public class TerminalScreen implements Screen {
                     terminal.writeString(arg + " ");
                 }
                 terminal.writeChar('\n');
+            }
+        });
+        terminal.addCommand("list", new Command() {
+            public void execute(String[] args) {
+                terminal.writeString("--- Files ---\n");
+                for (File file : files.getFiles()) {
+                    terminal.writeString(file.getName() + "\n");
+                }
+                terminal.writeString("-------------\n");
+            }
+        });
+        terminal.addCommand("open", new Command() {
+            public void execute(String[] args) {
+                try {
+                    File file = files.getFile(args[0]);
+                    game.setScreen(file);
+                } catch (IndexOutOfBoundsException | NullPointerException ex) {
+                    if (ex instanceof IndexOutOfBoundsException) {
+                        terminal.writeString(
+                            "Error: Command \"open\" is missing argument \"name\".\n"
+                        );
+                    } else {
+                        terminal.writeString(
+                            "Error when using command \"open\": \"" + args[0] + "\" is not a file.\n"
+                        );
+                    }
+                }
             }
         });
     }
