@@ -16,11 +16,20 @@ public class Main extends Game {
 	protected BitmapFont vt323Font;
 	/**Initializes the terminal screen, which should persist until the app is closed. */
 	protected TerminalScreen terminalScreen;
+	/**Initializes and updates the postions of game objects. */
+	protected Grid grid;
+	/**Robot game object. */
+	protected Robot robot;
+	/**Exit game object. */
+	protected Exit exit;
 	
 	public void create() {
 		batch = new SpriteBatch();
 		vt323Font = generateFreetypeFont("fonts\\VT323-Regular.ttf", 24);
 		terminalScreen = new TerminalScreen(this);
+		grid = new Grid(20, 20);
+
+		loadGameObjects();
 
 		this.setScreen(terminalScreen);
 	}
@@ -46,5 +55,29 @@ public class Main extends Game {
         generator.dispose();
 
 		return font;
+	}
+
+	/**Loads all objects onto the grid. */
+	private void loadGameObjects() {
+		grid.loadNewGrid();
+		robot = new Robot(grid, 19, 19);
+		exit = new Exit(grid, 0, 0);
+
+		// testing
+		// System.out.println("[");
+		// for (int row = 0; row < grid.getHeight(); row++) {
+		// 	System.out.print("\t[");
+		// 	for (int col = 0; col < grid.getWidth(); col++) {
+		// 		if (grid.getCell(col, row) instanceof Robot) {
+		// 			System.out.print("R,");
+		// 		} else if (grid.getCell(col, row) instanceof Exit) {
+		// 			System.out.print("E,");
+		// 		} else {
+		// 			System.out.print(".,");
+		// 		}
+		// 	}
+		// 	System.out.println("]");
+		// }
+		// System.out.println("]");
 	}
 }
