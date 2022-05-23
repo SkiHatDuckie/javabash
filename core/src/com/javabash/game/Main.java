@@ -62,22 +62,25 @@ public class Main extends Game {
 		grid.loadNewGrid();
 		robot = new Robot(grid, 19, 19);
 		exit = new Exit(grid, 0, 0);
+		grid.placeMines(25);
 
 		// testing
-		// System.out.println("[");
-		// for (int row = 0; row < grid.getHeight(); row++) {
-		// 	System.out.print("\t[");
-		// 	for (int col = 0; col < grid.getWidth(); col++) {
-		// 		if (grid.getCell(col, row) instanceof Robot) {
-		// 			System.out.print("R,");
-		// 		} else if (grid.getCell(col, row) instanceof Exit) {
-		// 			System.out.print("E,");
-		// 		} else {
-		// 			System.out.print(".,");
-		// 		}
-		// 	}
-		// 	System.out.println("]");
-		// }
-		// System.out.println("]");
+		System.out.println("[");
+		for (int row = 0; row < grid.getHeight(); row++) {
+			System.out.print("\t[");
+			for (int col = 0; col < grid.getWidth(); col++) {
+				if (grid.getCell(col, row) instanceof Robot) {
+					System.out.print("R,");
+				} else if (grid.getCell(col, row) instanceof Exit) {
+					System.out.print("E,");
+				} else if (grid.getCell(col, row) instanceof Mine) {
+					System.out.print("X,");
+				} else {
+					System.out.print(".,");
+				}
+			}
+			System.out.println("]");
+		}
+		System.out.println("]");
 	}
 }

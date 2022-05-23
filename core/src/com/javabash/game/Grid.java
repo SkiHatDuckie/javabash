@@ -40,4 +40,31 @@ public class Grid {
     public void loadObject(GameObject obj, int col, int row) throws IndexOutOfBoundsException {
         grid[row][col] = obj;
     }
+
+    /**Turns a percentage of cells on the grid that are {@code Room}s into {@code Mine}s.
+     * This method removes all {@code Mine}s that were previously on the grid before adding new ones.
+     * @param percent : The percentage of cells that should be switched to mines.
+     * (If there are 100 cells, and {@code percent} is 20, 20 {@code Mine}s will be added) */
+    public void placeMines(double percent) {
+        int numMines = (int) (width * height * (percent / 100));
+        GameObject cell;
+        int col;
+        int row;
+        for (int n = 0; n < numMines; n++) {
+            do {
+                col = (int) (Math.random() * width);
+                row = (int) (Math.random() * height);
+                cell = getCell(col, row); 
+            } while (!(cell instanceof Room));
+            new Mine(this, col, row);
+        }
+    }
+
+    /** This method also checks to see if it is possible for the robot to get to the exit.
+    * <br><br>
+    * Precondition : A {@code Robot} and an {@code Exit} have been added to the grid. */
+    public boolean isPossible(Robot robot, Exit exit) {
+        // TODO: This method is not complete
+        return false;
+    }
 }
