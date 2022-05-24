@@ -69,4 +69,6 @@ public class MapFile extends File {
             game.vt323Font.draw(game.batch, rows.get(row), 10, 30 + fontHeight * (rows.size() - 1 - row));
         }
     }
+
+    /**Draw the game grid to screen, with {@code Mine}  */
 }

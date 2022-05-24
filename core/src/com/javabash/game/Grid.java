@@ -4,6 +4,10 @@ public class Grid {
     private final int width;
     private final int height;
     private GameObject[][] grid;
+    /**A grid with the same dimensions as {@code grid}, that gives each cell an integer
+     * value based on the number of nearby cells with a {@code Mine} game object.
+     * Cells with a {@code Mine} are assigned the integer 9. */
+    private int[][] dangerGrid;
 
     /**The grid used to initialize the rooms, and store and
      * update the position of game objects such as the player's robot, the exit,
@@ -15,16 +19,19 @@ public class Grid {
         this.width = width;
         this.height = height; 
         grid = new GameObject[height][width];
+        dangerGrid = new int[height][width];
     }
 
     public int getWidth() { return width; }
     public int getHeight() { return height; }
+    public int[][] getDangerGrid() { return dangerGrid; }
 
     /**Fills {@code grid} with {@code Room} objects. */
     public void loadNewGrid() {
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 new Room(this, col, row);
+                dangerGrid[row][col] = 0;
             }
         }
     }
@@ -38,6 +45,9 @@ public class Grid {
     /**Loads {@code obj} onto the grid at ({@code col}, {@code row}).
      * This method will overwrite whatever game object is at ({@code col}, {@code row}). */
     public void loadObject(GameObject obj, int col, int row) throws IndexOutOfBoundsException {
+        if (obj instanceof Mine || grid[row][col] instanceof Mine) {
+            updateDangerGrid();
+        }
         grid[row][col] = obj;
     }
 
@@ -66,5 +76,31 @@ public class Grid {
     public boolean isPossible(Robot robot, Exit exit) {
         // TODO: This method is not complete
         return false;
+    }
+
+    /**Updates the values of {@code dangerGrid} when a {@code Mine} is added to or removed
+     * from the grid. */
+    private void updateDangerGrid() {
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                dangerGrid[row][col] = 0;
+
+                if (grid[row][col] instanceof Mine) {
+                    dangerGrid[row][col] = 9;
+                } else {
+                    int[][] nearbyCells = {
+                        {row - 1, col}, {row - 1, col + 1}, {row, col + 1}, {row + 1, col + 1},
+                        {row + 1, col}, {row + 1, col - 1}, {row, col - 1}, {row - 1, col - 1}
+                    };
+                    for (int[] cell : nearbyCells) {
+                        try {
+                            if (grid[cell[0]][cell[1]] instanceof Mine) {
+                                dangerGrid[row][col]++;
+                            }
+                        } catch (IndexOutOfBoundsException ex) {}  // Ignore the exception and continue.
+                    }
+                }
+            }
+        }
     }
 }
