@@ -18,7 +18,13 @@ public class Robot extends GameObject {
 
         startPos = new int[] {col, row};
         prevPositions = new boolean[grid.getHeight()][grid.getWidth()];
+
         prevPositions[startPos[1]][startPos[0]] = true;
+        for (int i = 0; i < coordModifier.length; i++) {
+            try {
+                prevPositions[startPos[1] + coordModifier[i][1]][startPos[0] + coordModifier[i][0]] = true;
+            } catch (IndexOutOfBoundsException ex) {}  // Ignore exception
+        }
     }
 
     public boolean[][] getPrevPositions() { return prevPositions; }

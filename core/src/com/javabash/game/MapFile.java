@@ -9,13 +9,13 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MapFile extends File {
-    private boolean[][] isFlagged;
     private Terminal terminal;
     /**Reference to {@code Terminal}'s virtual output buffer. */
     private char[] virtualOutput;
     /**The maximum number of characters that should be drawn in one row. */
     private int terminalWidth;
     /**Keeps track of which grid cells are flagged. */
+    private boolean[][] isFlagged;
 
     public MapFile(final Main game, String name) {
         super(game, name);
@@ -71,6 +71,7 @@ public class MapFile extends File {
 
     @Override
     public void render(float delta) {
+        // Set screen background color
         ScreenUtils.clear(0.1f, 0.1f, 0.1f, 1);
 
         renderGrid();
