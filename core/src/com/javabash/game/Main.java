@@ -28,11 +28,11 @@ public class Main extends Game {
 		batch = new SpriteBatch();
 		shape = new ShapeRenderer();
 		vt323Font = generateFreetypeFont("fonts\\VT323-Regular.ttf", 24);
-		terminalScreen = new TerminalScreen(this);
-		grid = new Grid(20, 20);
 
+		grid = new Grid(20, 20);
 		loadGameObjects();
 
+		terminalScreen = new TerminalScreen(this);
 		this.setScreen(terminalScreen);
 	}
 

@@ -9,14 +9,18 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MapFile extends File {
+    private boolean[][] isFlagged;
     private Terminal terminal;
     /**Reference to {@code Terminal}'s virtual output buffer. */
     private char[] virtualOutput;
     /**The maximum number of characters that should be drawn in one row. */
     private int terminalWidth;
+    /**Keeps track of which grid cells are flagged. */
 
     public MapFile(final Main game, String name) {
         super(game, name);
+
+        isFlagged = new boolean[game.grid.getHeight()][game.grid.getWidth()];
 
         // Set the buffer size to some abitrary large number.
         terminal = new Terminal(10000000);
@@ -26,6 +30,36 @@ public class MapFile extends File {
         terminal.addCommand("quit", new Command() {
             public void execute(String[] args) {
                 game.setScreen(game.terminalScreen);
+            }
+        });
+        terminal.addCommand("flag", new Command() {
+            public void execute(String[] args) {
+                int col = -1;
+                int row = -1;
+                try {
+                    col = Integer.parseInt(args[0]);
+                    row = Integer.parseInt(args[1]);
+                } catch(IndexOutOfBoundsException | NumberFormatException ex) {
+                    if (ex instanceof NumberFormatException) {
+                        terminal.writeString(
+                            "Error when using command \"flag\": args 'column' or 'row' do not represent " +
+                            "integers.\n"
+                        );
+                    } else {
+                        terminal.writeString(
+                            "Error: Command \"flag\" is missing arguments \"column\" or \"row\".\n"
+                        );
+                    }
+                }
+                if (col > -1 && row > -1) {
+                    try {
+                        isFlagged[row][col] = !isFlagged[row][col];
+                    } catch (IndexOutOfBoundsException ex) {
+                        terminal.writeString(
+                            "Error when using command \"flag\": args 'column' or 'row' are out of bounds.\n"
+                        );
+                    }
+                }
             }
         });
     }
@@ -74,9 +108,9 @@ public class MapFile extends File {
     private void renderGrid() {
         Color[] dangerColors = {
             new Color(0.7f, 0.2f, 0.7f, 0.5f), new Color(0, 0.3f, 0.8f, 0.5f), new Color(0, 0.5f, 0.8f, 0.5f),
-            new Color(0.2f, 0.9f, 0.6f, 0.5f), new Color(0.5f, 0.8f, 0.3f, 0.5f), new Color(0.9f, 0.75f, 0, 0.5f),
-            new Color(0.8f, 0.6f, 0.2f, 0.5f), new Color(0.8f, 0, 0, 0.5f), new Color(0.8f, 0, 0.4f, 0.5f),
-            new Color(1, 0.1f, 0, 1)
+            new Color(0.2f, 0.9f, 0.6f, 0.5f), new Color(0.5f, 0.8f, 0.3f, 0.5f), 
+            new Color(0.9f, 0.75f, 0, 0.5f), new Color(0.8f, 0.6f, 0.2f, 0.5f), new Color(0.8f, 0, 0, 0.5f), 
+            new Color(0.8f, 0, 0.4f, 0.5f), new Color(1, 0.1f, 0, 1)
         };
 
         int[][] dangerGrid = game.grid.getDangerGrid();
@@ -116,14 +150,6 @@ public class MapFile extends File {
     /**Draws any text onto the grid. */
     private void renderGridText() {
         Rectangle cellRect = new Rectangle(0, 0, 20, 20);
-        for (int col = 0; col < game.grid.getWidth(); col++) {
-            game.vt323Font.draw(
-                game.batch, 
-                col + "", 
-                48 + (cellRect.width * col), 
-                Gdx.graphics.getHeight() - 32.0f
-            );
-        }
         for (int row = 0; row < game.grid.getHeight(); row++) {
             game.vt323Font.draw(
                 game.batch, 
@@ -131,6 +157,22 @@ public class MapFile extends File {
                 28, 
                 Gdx.graphics.getHeight() - 50.0f - (cellRect.height * row)
             );
+            for (int col = 0; col < game.grid.getWidth(); col++) {
+                game.vt323Font.draw(
+                    game.batch, 
+                    col + "", 
+                    48 + (cellRect.width * col), 
+                    Gdx.graphics.getHeight() - 32.0f
+                );
+                if (isFlagged[row][col]) {
+                    game.vt323Font.draw(
+                        game.batch, 
+                        "X", 
+                        50 + (cellRect.width * col), 
+                        Gdx.graphics.getHeight() - 50.0f - (cellRect.height * row)
+                    );
+                }
+            }
         }
     }
 }
