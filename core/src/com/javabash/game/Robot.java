@@ -1,11 +1,13 @@
 package com.javabash.game;
 
 public class Robot extends GameObject {
-    private final int[] startPos;
     /**Converts a {@code Direction} constant into a grid coordinates modifier. */
     private static final int[][] coordModifier = new int[][] {
         {0, -1}, {1, 0}, {0, 1}, {-1, 0}
     };
+
+    private final int[] startPos;
+    private boolean[][] prevPositions;
 
     /**Robot game object.
      * @param grid : The grid to place the game object in.
@@ -15,7 +17,11 @@ public class Robot extends GameObject {
         super(grid, col, row);
 
         startPos = new int[] {col, row};
+        prevPositions = new boolean[grid.getHeight()][grid.getWidth()];
+        prevPositions[startPos[1]][startPos[0]] = true;
     }
+
+    public boolean[][] getPrevPositions() { return prevPositions; }
 
     /**Attempts to move the robot to the cell in the specified direction.
      * <br><br>
@@ -60,6 +66,7 @@ public class Robot extends GameObject {
             getCol() + coordModifier[direction][0], 
             getRow() + coordModifier[direction][1]
         );
+        prevPositions[getRow()][getCol()] = true;
         new Room(getGrid(), prevPos[0], prevPos[1]);
     }
 

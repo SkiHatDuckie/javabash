@@ -6,12 +6,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Main extends Game {
-	/**Draws sprites onto the screen.
-	 * Set to protected so that other classes within the game package 
-	 * can find these resources. */
+	/**Draws sprites onto the screen. */
 	protected SpriteBatch batch;
+	/**Draws primitive shapes onto the screen. */
+	protected ShapeRenderer shape;
 	/**Draws text onto the screen. */
 	protected BitmapFont vt323Font;
 	/**Initializes the terminal screen, which should persist until the app is closed. */
@@ -25,6 +26,7 @@ public class Main extends Game {
 	
 	public void create() {
 		batch = new SpriteBatch();
+		shape = new ShapeRenderer();
 		vt323Font = generateFreetypeFont("fonts\\VT323-Regular.ttf", 24);
 		terminalScreen = new TerminalScreen(this);
 		grid = new Grid(20, 20);
@@ -64,34 +66,13 @@ public class Main extends Game {
 		exit = new Exit(grid, 0, 0);
 		grid.placeMines(25);
 
-		// testing
-		System.out.println("[");
-		for (int row = 0; row < grid.getHeight(); row++) {
-			System.out.print("\t[");
-			for (int col = 0; col < grid.getWidth(); col++) {
-				if (grid.getCell(col, row) instanceof Robot) {
-					System.out.print("R,");
-				} else if (grid.getCell(col, row) instanceof Exit) {
-					System.out.print("E,");
-				} else if (grid.getCell(col, row) instanceof Mine) {
-					System.out.print("X,");
-				} else {
-					System.out.print(".,");
-				}
-			}
-			System.out.println("]");
-		}
-		System.out.println("]");
-
-		int[][] dangerGrid = grid.getDangerGrid();
-		System.out.println("[");
-		for (int row = 0; row < grid.getHeight(); row++) {
-			System.out.print("\t[");
-			for (int col = 0; col < grid.getWidth(); col++) {
-				System.out.print(dangerGrid[row][col] + ",");
-			}
-			System.out.println("]");
-		}
-		System.out.println("]");
+		// do testing below
+		// robot.move(Direction.UP);
+		// robot.move(Direction.UP);
+		// robot.move(Direction.LEFT);
+		// robot.move(Direction.LEFT);
+		// robot.move(Direction.LEFT);
+		// robot.move(Direction.LEFT);
+		// robot.move(Direction.DOWN);
 	}
 }
