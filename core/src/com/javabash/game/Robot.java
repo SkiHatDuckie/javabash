@@ -46,8 +46,9 @@ public class Robot extends GameObject {
     public int move(int direction) {
         try {
             GameObject neighborCell = getNeighborCell(direction);
-
-            if (neighborCell instanceof Room) {
+            if (numLives <= 0) {
+                return -1;
+            } else if (neighborCell instanceof Room) {
                 makeMove(direction);
                 return 0;
             } else if (neighborCell instanceof Exit) {
