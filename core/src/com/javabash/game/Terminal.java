@@ -28,6 +28,7 @@ public class Terminal {
     public char[] getOutputBuffer() { return virtualOutput; }
     public int getInputIndex() { return inputIdx; }
     public int getCommandIndex() { return commandIdx; }
+    public HashMap<String, Command> getCommandTable() { return commandTable; }
 
     /**Returns the index of last non-empty character in {@code virtualOutput}. */
     public int getLastCharacterIndex() {

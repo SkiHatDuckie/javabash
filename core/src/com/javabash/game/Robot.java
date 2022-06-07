@@ -8,12 +8,14 @@ public class Robot extends GameObject {
 
     private final int[] startPos;
     private boolean[][] prevPositions;
+    private int numLives;
 
     /**Robot game object.
      * @param grid : The grid to place the game object in.
      * @param col : X position on grid.
-     * @param row : Y position on grid. */
-    public Robot(Grid grid, int col, int row) {
+     * @param row : Y position on grid.
+     * @param numLives : The total number of lives the player has. */
+    public Robot(Grid grid, int col, int row, int numLives) {
         super(grid, col, row);
 
         startPos = new int[] {col, row};
@@ -25,9 +27,12 @@ public class Robot extends GameObject {
                 prevPositions[startPos[1] + coordModifier[i][1]][startPos[0] + coordModifier[i][0]] = true;
             } catch (IndexOutOfBoundsException ex) {}  // Ignore exception
         }
+
+        this.numLives = numLives;
     }
 
     public boolean[][] getPrevPositions() { return prevPositions; }
+    public int getNumLives() { return numLives; };
 
     /**Attempts to move the robot to the cell in the specified direction.
      * <br><br>
@@ -54,6 +59,10 @@ public class Robot extends GameObject {
         } catch (IndexOutOfBoundsException ex) {
             return -1;
         }
+    }
+
+    public void decrementNumLives() {
+        numLives--;
     }
 
     /**Gets the game object occupying the neighboring cell in direction {@code direction}. */

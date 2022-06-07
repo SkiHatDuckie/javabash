@@ -5,10 +5,12 @@ import com.badlogic.gdx.Screen;
 public class File implements Screen {
     final Main game;
     private String name;
+    protected Terminal terminal;
 
-    public File(final Main game, String name) {
+    public File(final Main game, String name, Terminal terminal) {
         this.game = game;
         this.name = name;
+        this.terminal = terminal;
     }
 
     public String getName() { return name; }

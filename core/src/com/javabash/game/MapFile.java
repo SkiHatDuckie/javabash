@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class MapFile extends File {
-    private Terminal terminal;
     /**Reference to {@code Terminal}'s virtual output buffer. */
     private char[] virtualOutput;
     /**The maximum number of characters that should be drawn in one row. */
@@ -18,21 +17,21 @@ public class MapFile extends File {
     private boolean[][] isFlagged;
 
     public MapFile(final Main game, String name) {
-        super(game, name);
+        super(game, name, new Terminal(10000000));
 
         isFlagged = new boolean[game.grid.getHeight()][game.grid.getWidth()];
 
         // Set the buffer size to some abitrary large number.
-        terminal = new Terminal(10000000);
+        // {@code terminal} is initialized and stored in the {@File} parent class.
         virtualOutput = terminal.getOutputBuffer();
         terminalWidth = 40;
 
-        terminal.addCommand("quit", new Command() {
+        terminal.addCommand("quit", new Command(": exits from file") {
             public void execute(String[] args) {
                 game.setScreen(game.terminalScreen);
             }
         });
-        terminal.addCommand("flag", new Command() {
+        terminal.addCommand("flag", new Command("[x] [y]: flag or unflag a room") {
             public void execute(String[] args) {
                 int col = -1;
                 int row = -1;

@@ -62,17 +62,8 @@ public class Main extends Game {
 	/**Loads all objects onto the grid. */
 	private void loadGameObjects() {
 		grid.loadNewGrid();
-		robot = new Robot(grid, 19, 19);
+		robot = new Robot(grid, 19, 19, 3);
 		exit = new Exit(grid, 0, 0);
 		grid.placeMines(25);
-
-		// do testing below
-		// robot.move(Direction.UP);
-		// robot.move(Direction.UP);
-		// robot.move(Direction.LEFT);
-		// robot.move(Direction.LEFT);
-		// robot.move(Direction.LEFT);
-		// robot.move(Direction.LEFT);
-		// robot.move(Direction.DOWN);
 	}
 }

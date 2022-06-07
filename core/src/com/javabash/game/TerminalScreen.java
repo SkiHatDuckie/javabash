@@ -1,6 +1,7 @@
 package com.javabash.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -29,7 +30,7 @@ public class TerminalScreen implements Screen {
         virtualOutput = terminal.getOutputBuffer();
         terminalWidth = 40;
 
-        terminal.addCommand("echo", new Command() {
+        terminal.addCommand("echo", new Command("[str]: writes string into terminal") {
             public void execute(String[] args) {
                 for (String arg : args) {
                     terminal.writeString(arg + " ");
@@ -37,7 +38,7 @@ public class TerminalScreen implements Screen {
                 terminal.writeChar('\n');
             }
         });
-        terminal.addCommand("list", new Command() {
+        terminal.addCommand("list", new Command(": lists all files") {
             public void execute(String[] args) {
                 terminal.writeString("--- Files ---\n");
                 for (File file : files.getFiles()) {
@@ -46,7 +47,7 @@ public class TerminalScreen implements Screen {
                 terminal.writeString("-------------\n");
             }
         });
-        terminal.addCommand("open", new Command() {
+        terminal.addCommand("open", new Command("[file]: open file") {
             public void execute(String[] args) {
                 try {
                     File file = files.getFile(args[0]);
@@ -62,6 +63,23 @@ public class TerminalScreen implements Screen {
                         "Error: Command \"open\" is missing argument \"name\".\n"
                     );
                 }
+            }
+        });
+        terminal.addCommand("help", new Command(": lists the commands available") {
+            public void execute(String[] args) {
+                terminal.writeString("--- Help ----\n");
+                HashMap<String, Command> cmds = terminal.getCommandTable();
+                for (String cmdName : cmds.keySet()) {
+                    terminal.writeString("'" + cmdName + "' " + cmds.get(cmdName).description + "\n");
+                }
+                for (File file : files.getFiles()) {
+                    cmds = file.terminal.getCommandTable();
+                    terminal.writeString("--- " + file.getName() + ":\n");
+                    for (String cmdName : cmds.keySet()) {
+                        terminal.writeString("'" + cmdName + "' " + cmds.get(cmdName).description + "\n");
+                    }
+                }
+                terminal.writeString("-------------\n");
             }
         });
     }
