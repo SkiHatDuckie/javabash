@@ -28,7 +28,7 @@ public class TerminalScreen implements Screen {
         // Set the buffer size to some abitrary large number.
         terminal = new Terminal(10000000);
         virtualOutput = terminal.getOutputBuffer();
-        terminalWidth = 40;
+        terminalWidth = 60;
 
         terminal.addCommand("echo", new Command("[str]: writes string into terminal") {
             public void execute(String[] args) {

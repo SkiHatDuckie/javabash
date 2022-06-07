@@ -19,7 +19,7 @@ public class RobotCameraFile extends File {
         // Set the buffer size to some abitrary large number.
         // {@code terminal} is initialized and stored in the {@File} parent class.
         virtualOutput = terminal.getOutputBuffer();
-        terminalWidth = 40;
+        terminalWidth = 45;
 
         terminal.addCommand("quit", new Command(": exits from file") {
             public void execute(String[] args) {
@@ -122,7 +122,7 @@ public class RobotCameraFile extends File {
 
         game.shape.begin(ShapeType.Filled);
         game.shape.setColor(dangerColors[game.grid.getDangerGrid()[game.robot.getRow()][game.robot.getCol()]]);
-        game.shape.rect(150, 150, 150, 150);
+        game.shape.rect(520, 40, 400, 400);
         game.shape.end();
     }
 }

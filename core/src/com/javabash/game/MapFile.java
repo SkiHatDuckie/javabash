@@ -24,7 +24,7 @@ public class MapFile extends File {
         // Set the buffer size to some abitrary large number.
         // {@code terminal} is initialized and stored in the {@File} parent class.
         virtualOutput = terminal.getOutputBuffer();
-        terminalWidth = 40;
+        terminalWidth = 45;
 
         terminal.addCommand("quit", new Command(": exits from file") {
             public void execute(String[] args) {
@@ -75,17 +75,18 @@ public class MapFile extends File {
 
         renderGrid();
         game.batch.begin();
-        renderVirtualTerminalRow();
+        renderVirtualTerminal();
         renderGridText();
         game.batch.end();
     }
 
-    /**This method will only draw the latest row of output, as to avoid covering
-     * up the map. */
-    private void renderVirtualTerminalRow() {
+    /**Draw the virtual terminal's output to the screen. */
+    private void renderVirtualTerminal() {
+        float fontHeight = game.vt323Font.getLineHeight();
+
         ArrayList<String> rows = new ArrayList<String>();
         String rowStr = "";
-    
+
         for (int i = 0; i < terminal.getLastCharacterIndex() + 1; i++) {
             if (virtualOutput[i] == '\n' || rowStr.length() == terminalWidth) {
                 rows.add(rowStr);
@@ -100,8 +101,10 @@ public class MapFile extends File {
         if (!rowStr.isEmpty()) {
             rows.add(rowStr);
         }
-    
-        game.vt323Font.draw(game.batch, rows.get(rows.size() - 1), 10, 30);
+
+        for (int row = rows.size() - 1; row >= 0; row--) {
+            game.vt323Font.draw(game.batch, rows.get(row), 10, 30 + fontHeight * (rows.size() - 1 - row));
+        }
     }
 
     /**Draws the game grid to screen, with game objects hidden from the player. */
@@ -121,9 +124,9 @@ public class MapFile extends File {
             game.shape.begin(ShapeType.Line);
             game.shape.setColor(Color.LIGHT_GRAY);
             game.shape.line(
-                48 + (cellRect.width * col), 
+                488 + (cellRect.width * col), 
                 Gdx.graphics.getHeight() - 48, 
-                48 + (cellRect.width * col), 
+                488 + (cellRect.width * col), 
                 Gdx.graphics.getHeight() - 28
             );
             game.shape.end();
@@ -137,7 +140,7 @@ public class MapFile extends File {
                     game.shape.setColor(new Color(0.4f, 0.4f, 0.4f, 0.5f));
                 }
                 game.shape.rect(
-                    48 + (cellRect.width * col), 
+                    488 + (cellRect.width * col), 
                     Gdx.graphics.getHeight() - 48 - cellRect.height - (cellRect.height * row), 
                     cellRect.width,
                     cellRect.height 
@@ -154,21 +157,21 @@ public class MapFile extends File {
             game.vt323Font.draw(
                 game.batch, 
                 row + "", 
-                28, 
+                468, 
                 Gdx.graphics.getHeight() - 50.0f - (cellRect.height * row)
             );
             for (int col = 0; col < game.grid.getWidth(); col++) {
                 game.vt323Font.draw(
                     game.batch, 
                     col + "", 
-                    48 + (cellRect.width * col), 
+                    488 + (cellRect.width * col), 
                     Gdx.graphics.getHeight() - 32.0f
                 );
                 if (isFlagged[row][col]) {
                     game.vt323Font.draw(
                         game.batch, 
                         "X", 
-                        50 + (cellRect.width * col), 
+                        490 + (cellRect.width * col), 
                         Gdx.graphics.getHeight() - 50.0f - (cellRect.height * row)
                     );
                 }
