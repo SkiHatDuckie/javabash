@@ -1,5 +1,7 @@
 package com.javabash.game;
 
+import java.util.ArrayList;
+
 public class Grid {
     private final int width;
     private final int height;
@@ -8,6 +10,10 @@ public class Grid {
      * value based on the number of nearby cells with a {@code Mine} game object.
      * Cells with a {@code Mine} are assigned the integer 9. */
     private int[][] dangerGrid;
+    /**Used as dynamic memory for the recursive function, {@code isExitAdjacent}. */
+    private ArrayList<ArrayList<Integer>> searchedCells;
+    /**Percentage of grid cells that contain a {@code Mine}. */
+    private double minePercentage;
 
     /**The grid used to initialize the rooms, and store and
      * update the position of game objects such as the player's robot, the exit,
@@ -17,9 +23,10 @@ public class Grid {
      * @param heigth : Number of rows (final; should not be changed after initialization) */
     public Grid(final int width, final int height) {
         this.width = width;
-        this.height = height; 
+        this.height = height;
         grid = new GameObject[height][width];
         dangerGrid = new int[height][width];
+        searchedCells = new ArrayList<ArrayList<Integer>>();
     }
 
     public int getWidth() { return width; }
@@ -52,7 +59,6 @@ public class Grid {
     }
 
     /**Turns a percentage of cells on the grid that are {@code Room}s into {@code Mine}s.
-     * This method removes all {@code Mine}s that were previously on the grid before adding new ones.
      * @param percent : The percentage of cells that should be switched to mines.
      * (If there are 100 cells, and {@code percent} is 20, 20 {@code Mine}s will be added) */
     public void placeMines(double percent) {
@@ -68,14 +74,56 @@ public class Grid {
             } while (!(cell instanceof Room));
             new Mine(this, col, row);
         }
+        minePercentage = percent;
     }
 
-    /** This method also checks to see if it is possible for the robot to get to the exit.
-    * <br><br>
-    * Precondition : A {@code Robot} and an {@code Exit} have been added to the grid. */
-    public boolean isPossible(Robot robot, Exit exit) {
-        // TODO: This method is not complete
-        return false;
+    /**Recursively check every cell that isn't {@code Mine} to see if {@code Exit}
+     * can be found.
+     * @param obj : The gameObject on the grid to check.
+     * @return Returns 1 if an {@code Exit} object was found. (0 = none found) */
+    public int isExitAdjacent(GameObject obj) {
+        int[][] adjacentCells = {
+            {obj.getRow() - 1, obj.getCol()}, {obj.getRow(), obj.getCol() + 1},
+            {obj.getRow() + 1, obj.getRow()}, {obj.getRow(), obj.getCol() - 1}
+        };
+
+        ArrayList<Integer> temp = new ArrayList<Integer>();
+
+        for (int[] cell : adjacentCells) {
+            temp.add(cell[0]);
+            temp.add(cell[1]);
+            try {
+                if (getCell(cell[1], cell[0]) instanceof Exit) {
+                    return 1;
+                } else if (!(getCell(cell[1], cell[0]) instanceof Mine)
+                           && !searchedCells.contains(temp)) {
+                    searchedCells.add(temp);
+                    return isExitAdjacent(getCell(cell[1], cell[0]));
+                }
+            } catch (IndexOutOfBoundsException ex) {}
+            temp.clear();
+        }
+        return 0;
+    }
+
+    /** Checks if the grid is possible to beat, and shuffles the mine placement if not.
+     * <br><br>
+     * Precondition : Grid has been loaded.
+     * @return An array with the new robot and exit game objects after shuffle, respectively. */
+    public GameObject[] shuffleUntilPossible(Robot robot, Exit exit) {
+        int res = 0;
+        do {
+            searchedCells.clear();
+            res = isExitAdjacent(robot);
+            if (res == 0) {
+                loadNewGrid();
+                robot = new Robot(this, robot.getCol(), robot.getRow(), robot.getNumLives());
+                exit = new Exit(this, exit.getCol(), exit.getRow());
+                placeMines(minePercentage);
+            }
+            System.out.println(res);
+        } while (res == 0);
+        return new GameObject[] {robot, exit};
     }
 
     /**Updates the values of {@code dangerGrid} when a {@code Mine} is added to or removed

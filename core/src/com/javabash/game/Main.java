@@ -65,5 +65,9 @@ public class Main extends Game {
 		robot = new Robot(grid, 19, 19, 3);
 		exit = new Exit(grid, 0, 0);
 		grid.placeMines(25);
+
+		GameObject[] updatedObjects = grid.shuffleUntilPossible(robot, exit);
+		robot = (Robot) updatedObjects[0];
+		exit = (Exit) updatedObjects[1];
 	}
 }
